@@ -26,7 +26,7 @@ export default (app: Router) => {
     })
   );
 
-  route.get("/test", (req: Request, res: Response) =>
+  route.get("/test", (_req: Request, res: Response) =>
     res.status(200).json({ name: "Jordan Warner" })
   );
 

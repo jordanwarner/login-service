@@ -7,14 +7,10 @@ import { Request, Response, NextFunction } from "express";
 import { ResponseError } from "../types/response-error";
 
 export default ({ app }: { app: express.Application }) => {
-  /**
-   * Health Check endpoints
-   * @TODO Explain why they are here
-   */
-  app.get("/status", (req, res) => {
+  app.get("/status", (_req, res) => {
     res.status(200).end();
   });
-  app.head("/status", (req, res) => {
+  app.head("/status", (_req, res) => {
     res.status(200).end();
   });
 
@@ -23,7 +19,7 @@ export default ({ app }: { app: express.Application }) => {
   app.use(config.api.prefix, routes());
 
   /// catch 404 and forward to error handler
-  app.use((req, res, next) => {
+  app.use((_req, _res, next) => {
     const err = new ResponseError("Not Found");
     err["status"] = 404;
     next(err);
@@ -31,7 +27,7 @@ export default ({ app }: { app: express.Application }) => {
 
   /// error handlers
   app.use(
-    (err: ResponseError, req: Request, res: Response, next: NextFunction) => {
+    (err: ResponseError, _req: Request, res: Response, next: NextFunction) => {
       /**
        * Handle 401 thrown by express-jwt library
        */
@@ -44,14 +40,12 @@ export default ({ app }: { app: express.Application }) => {
       return next(err);
     }
   );
-  app.use(
-    (err: ResponseError, req: Request, res: Response, next: NextFunction) => {
-      res.status(err.status || 500);
-      res.json({
-        errors: {
-          message: err.message,
-        },
-      });
-    }
-  );
+  app.use((err: ResponseError, _req: Request, res: Response) => {
+    res.status(err.status || 500);
+    res.json({
+      errors: {
+        message: err.message,
+      },
+    });
+  });
 };
